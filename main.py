@@ -1,21 +1,32 @@
 import networkx as nx
 
-#current to do: read in file as 2 lists, 1 left int 1 right int
+#Lists of users, elements at the same index indicates an edge
+user_list_1 = [] 
+user_list_2 = []
 
-user_1 = [] #Lists of users, user_1[i] and user_2[i] indicate an edge between element
-user_2 = []
-
+#Parses file into 2 lists
 with open("facebook_links.txt") as File:
     for line in File:
-        line = line.split("\t")      #Splits line into list of 3 elements
-        user_1.append(line[0])
-        user_2.append(line[1])
+        line = line.split("\t")
+        user_list_1.append(line[0])
+        user_list_2.append(line[1])
 
-fb_graph = nx.Graph()
+#Creates list of tuples of all edges to be inserted into a graph
+edge_list = []
+count = 0
+for user in user_list_1:
+    edge_list.append((user, user_list_2[count]))
+    count += 1
 
+fb_graph = nx.Graph(edge_list)
 
+degree_list = nx.degree_histogram(fb_graph)
 
-#Goal: Create a graph of friends from txt. Using graph, find avg degree and count of vertices with degree > 100. (need list of vertices' degrees)
-#Adjacency list: An array of lists. vertex 1 would be element 1 in the array, and the element is a list of all the vertices
-#If j is in list A[i], then i is in list A[j]
-#There are many skipped elements in the txt (ex element 2 is connected to 1, but doesn't have it's own left list). Is there a way to optimize this? or just use a load of space
+#Counts number of users with more than 100 friends
+v_count = 0
+for vertex in degree_list:
+    if vertex>100:
+        v_count += 1
+
+print(f"Average degree of vertices: {sum(degree_list)/len(degree_list)}")
+print(f"Vertices with degree >100: {v_count}")
